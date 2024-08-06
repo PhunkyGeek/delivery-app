@@ -1,6 +1,6 @@
 import React from "react";
 import Bike from "../img/bike.png";
-import HeroBg from "../img/herobg.png";
+import HeroBg from "../img/herobg.jpg";
 import { heroData } from "../utils/data";
 
 const HomeContainer = () => {
@@ -52,7 +52,7 @@ const HomeContainer = () => {
       <div className="py-2 flex-1 flex items-center relative">
         <img
           src={HeroBg}
-          className="ml-auto h-420 w-full lg:w-auto lg:h-650"
+          className="ml-auto h-420 w-full lg:w-auto lg:h-650 opacity-20"
           alt="hero-bg"
         />
 

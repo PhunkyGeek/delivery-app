@@ -25,6 +25,8 @@ import { storage } from "../firebase.config";
 import { getOrderDetails, saveItem } from "../utils/firebaseFunctions";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
+import PriceEstimate from "./PriceEstimate";
+import { useNavigate } from "react-router-dom";
 
 const CreateContainer = () => {
   const [customerName, setCustomerName] = useState("");
@@ -171,6 +173,48 @@ const CreateContainer = () => {
     });
   };
 
+  const [estimatedPrice, setEstimatedPrice] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const navigate = useNavigate();
+
+  const toRadians = (degree) => degree * (Math.PI / 180);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  };
+
+  const calculatePrice = (distance) => {
+    const baseFare = 2.00; // Base fare in dollars
+    const distanceRate = 1.50; // Rate per kilometer in dollars
+    const minimumFare = 5.00; // Minimum fare in dollars
+
+    let price = baseFare + (distance * distanceRate);
+    return price < minimumFare ? minimumFare : price;
+  };
+
+  const getEstimate = () => {
+    // Use actual pickup and dropoff coordinates
+    const dist = calculateDistance(
+      customerAddress.lat, customerAddress.lon,
+      recipientAddress.lat, recipientAddress.lon
+    );
+    const price = calculatePrice(dist);
+    setEstimatedPrice(price);
+    setDistance(dist);
+    saveDetails();
+
+    // Navigate to the Price Estimate page
+    navigate('/price-estimate', { state: { estimatedPrice: price, distance: dist } });
+  };
+
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
       <div
@@ -255,7 +299,7 @@ const CreateContainer = () => {
           </select>
         </div>
 
-        <div
+        {/* <div
           className="group flex justify-center items-center flex-col
         border-2 border-dotted border-gray-300 w-full h-225 md:h-420
         cursor-pointer rounded-lg"
@@ -313,7 +357,7 @@ const CreateContainer = () => {
               )}
             </>
           )}
-        </div>
+        </div> */}
 
         <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
           <MdContactEmergency className="text-3xl text-gray-700" />
@@ -361,7 +405,7 @@ const CreateContainer = () => {
             className="ml-0 md:ml-auto w-full md:w-auto
           border-none outline-none bg-emerald-500 px-12 py-2 rounded-lg
           text-lg text-white font-semibold"
-            onClick={saveDetails}
+            onClick={getEstimate}
           >
             Get Order Estimate
           </button>
