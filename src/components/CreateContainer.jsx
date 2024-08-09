@@ -22,7 +22,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../firebase.config";
-import { getOrderDetails, saveItem } from "../utils/firebaseFunctions";
+import { getOrderDetails, saveItem, deleteItem } from "../utils/firebaseFunctions";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 import PriceEstimate from "./PriceEstimate";
@@ -45,57 +45,57 @@ const CreateContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [{ orderDetails }, dispatch] = useStateValue();
 
-  const uploadImage = (e) => {
-    setIsLoading(true);
-    const imageFile = e.target.files[0];
-    const storageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+  // const uploadImage = (e) => {
+  //   setIsLoading(true);
+  //   const imageFile = e.target.files[0];
+  //   const storageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
+  //   const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const uploadProgress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      },
-      (error) => {
-        console.log(error);
-        setFields(true);
-        setMsg("Error while uploading : Try Again 🤦‍♂️");
-        setAlertStatus("danger");
-        setTimeout(() => {
-          setFields(false);
-          setIsLoading(false);
-        }, 4000);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageAsset(downloadURL);
-          setIsLoading(false);
-          setFields(true);
-          setMsg("Image uploaded successfully 😎");
-          setAlertStatus("success");
-          setTimeout(() => {
-            setFields(false);
-          }, 4000);
-        });
-      }
-    );
-  };
+  //   uploadTask.on(
+  //     "state_changed",
+  //     (snapshot) => {
+  //       const uploadProgress =
+  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //     },
+  //     (error) => {
+  //       console.log(error);
+  //       setFields(true);
+  //       setMsg("Error while uploading : Try Again 🤦‍♂️");
+  //       setAlertStatus("danger");
+  //       setTimeout(() => {
+  //         setFields(false);
+  //         setIsLoading(false);
+  //       }, 4000);
+  //     },
+  //     () => {
+  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  //         setImageAsset(downloadURL);
+  //         setIsLoading(false);
+  //         setFields(true);
+  //         setMsg("Image uploaded successfully 😎");
+  //         setAlertStatus("success");
+  //         setTimeout(() => {
+  //           setFields(false);
+  //         }, 4000);
+  //       });
+  //     }
+  //   );
+  // };
 
-  const deleteImage = () => {
-    setIsLoading(true);
-    const deleteRef = ref(storage, imageAsset);
-    deleteObject(deleteRef).then(() => {
-      setImageAsset(null);
-      setIsLoading(false);
-      setFields(true);
-      setMsg("Image deleted successfully 👌");
-      setAlertStatus("success");
-      setTimeout(() => {
-        setFields(false);
-      }, 4000);
-    });
-  };
+  // const deleteImage = () => {
+  //   setIsLoading(true);
+  //   const deleteRef = ref(storage, imageAsset);
+  //   deleteObject(deleteRef).then(() => {
+  //     setImageAsset(null);
+  //     setIsLoading(false);
+  //     setFields(true);
+  //     setMsg("Image deleted successfully 👌");
+  //     setAlertStatus("success");
+  //     setTimeout(() => {
+  //       setFields(false);
+  //     }, 4000);
+  //   });
+  // };
 
   const saveDetails = () => {
     setIsLoading(true);
@@ -105,10 +105,10 @@ const CreateContainer = () => {
         !customerNumber ||
         !customerAddress ||
         !category ||
-        !imageAsset ||
-        recipientName ||
-        recipientNumber ||
-        recipientAddress
+        // !imageAsset ||
+        !recipientName ||
+        !recipientNumber ||
+        !recipientAddress
       ) {
         setFields(true);
         setMsg("Required fields can't be empty");
@@ -124,20 +124,23 @@ const CreateContainer = () => {
           number: customerNumber,
           address: customerAddress,
           category: category,
-          rname: customerName,
-          rnumber: customerNumber,
-          raddress: customerAddress,
-          imageURL: imageAsset,
+          rname: recipientName,
+          rnumber: recipientNumber,
+          raddress: recipientAddress,
+          // imageURL: imageAsset,
         };
+  
         saveItem(data);
         setIsLoading(false);
         setFields(true);
         setMsg("Data submitted successfully 😊");
-        clearData();
         setAlertStatus("success");
         setTimeout(() => {
           setFields(false);
         }, 4000);
+  
+        // Return the saved data
+        return data;
       }
     } catch (error) {
       console.log(error);
@@ -148,16 +151,15 @@ const CreateContainer = () => {
         setFields(false);
         setIsLoading(false);
       }, 4000);
+      return null;
     }
-
-    fetchData();
   };
 
   const clearData = () => {
     setCustomerName("");
     setCustomerNumber("");
     setCustomerAddress("");
-    setImageAsset(null);
+    // setImageAsset(null);
     setCategory("Select Category");
     setRecipientName("");
     setRecipientNumber("");
@@ -200,8 +202,7 @@ const CreateContainer = () => {
     return price < minimumFare ? minimumFare : price;
   };
 
-  const getEstimate = () => {
-    // Use actual pickup and dropoff coordinates
+  const getEstimate = async () => {
     const dist = calculateDistance(
       customerAddress.lat, customerAddress.lon,
       recipientAddress.lat, recipientAddress.lon
@@ -209,11 +210,13 @@ const CreateContainer = () => {
     const price = calculatePrice(dist);
     setEstimatedPrice(price);
     setDistance(dist);
-    saveDetails();
-
-    // Navigate to the Price Estimate page
-    navigate('/price-estimate', { state: { estimatedPrice: price, distance: dist } });
+    const savedData = await saveDetails();
+  
+    if (savedData) {
+      navigate('/price-estimate', { state: { estimatedPrice: price, distance: dist, orderId: savedData.id } });
+    }
   };
+  
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center">

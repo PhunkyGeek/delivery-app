@@ -5,3 +5,5 @@ export {default as HomeContainer} from "./HomeContainer";
 export {default as Loader} from "./Loader";
 export {default as RowContainer} from "./RowContainer";
 export {default as PriceEstimate} from "./PriceEstimate";
+export {default as DriverSearch} from "./DriverSearch";
+export {default as OrderDetailsPopup} from "./orderDetailsPopup";

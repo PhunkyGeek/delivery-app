@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
 import { firestore } from "../firebase.config";
+import { getDatabase, ref, remove } from "firebase/database";
 
 // Saving new Item
 export const saveItem = async (data) => {
@@ -7,6 +8,20 @@ export const saveItem = async (data) => {
         merge : true,
     });
 };
+
+// export const deleteItem = async (itemId) => {
+//   const db = getDatabase();
+//   const itemRef = ref(db, "orderDetails" + itemId);
+//   await remove(itemRef);
+// };
+
+export const deleteItem = async (itemId) => {
+    const db = getDatabase();
+    const itemRef = ref(db, `orderDetails/${itemId}`);
+    await remove(itemRef);
+  };
+  
+
 
 // get order details
 export const getOrderDetails = async () => {

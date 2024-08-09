@@ -62,30 +62,36 @@ const Header = () => {
             exit={{ opacity: 0, x: 200 }}
             className="flex items-center gap-8"
           >
+            <Link to={"/"}>
             <li
               className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer"
             >
               Home
             </li>
+            </Link>
+            <Link to={"/"}>
             <li
+              className="text-base text-textColor hover:text-headingColor duration-100 transition-all
+                ease-in-out cursor-pointer"
+            >
+              Contact Us
+            </li>
+            </Link>
+            
+            {/* <li
               className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer"
             >
               Menu
             </li>
-            <li
-              className="text-base text-textColor hover:text-headingColor duration-100 transition-all
-                ease-in-out cursor-pointer"
-            >
-              About Us
-            </li>
+            
             <li
               className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer"
             >
               Services
-            </li>
+            </li> */}
           </motion.ul>
 
           <div className="relative flex items-center justify-center">
@@ -176,34 +182,40 @@ const Header = () => {
               )}
 
               <ul className="flex flex-col">
+                <Link>
                 <li
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                 onClick={() => setIsMenu(false)}
                 >
-                  Home
+                  Go Home
                 </li>
+                </Link>
+                <Link>
                 <li
+                  className="text-base text-textColor hover:text-headingColor duration-100 transition-all
+                ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
+                onClick={() => setIsMenu(false)}
+                >
+                  Contact Us
+                </li>
+                </Link>
+                
+                {/* <li
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                 onClick={() => setIsMenu(false)}
                 >
                   Menu
                 </li>
-                <li
-                  className="text-base text-textColor hover:text-headingColor duration-100 transition-all
-                ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
-                onClick={() => setIsMenu(false)}
-                >
-                  About Us
-                </li>
+                
                 <li
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all
                 ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                 onClick={() => setIsMenu(false)}
                 >
                   Services
-                </li>
+                </li> */}
               </ul>
 
               <p

@@ -2,6 +2,7 @@ import React from "react";
 import Bike from "../img/bike.png";
 import HeroBg from "../img/herobg.jpg";
 import { heroData } from "../utils/data";
+import { Link } from "react-router-dom";
 
 const HomeContainer = () => {
   return (
@@ -27,7 +28,7 @@ const HomeContainer = () => {
         </div>
         <p
           className="text-[2.5rem] lg:text-[4.5rem] font-bold tracking-wide 
-    text-headingColor"
+    text-headingColor2"
         >
           The safest delivery in
           <span className="text-yellow-500 text-[3rem] lg:text-[5rem]">
@@ -40,14 +41,16 @@ const HomeContainer = () => {
           goodbye to delivery hassles and hello to seamless convenience. Ready
           to deliver happiness? Try us today!
         </p>
+        <Link to={"/createitem"}>
         <button
           type="button"
           className="bg-gradient-to-br from-yellow-400 to-yellow-500 w-full
-    md:w-auto px-4 py-2 rounded-lg hover:shadow-lg transition-all ease-in-out
-    duration-100"
+          md:w-auto px-4 py-2 rounded-lg hover:shadow-lg transition-all ease-in-out
+          duration-100"
         >
           Order Now
         </button>
+        </Link>
       </div>
       <div className="py-2 flex-1 flex items-center relative">
         <img
@@ -67,6 +70,7 @@ const HomeContainer = () => {
                 className="lg:w-190 p-4 bg-cardOverlay backdrop-blur-md rounded-3xl flex flex-col
                 items-center justify-center drop-shadow-lg"
               >
+                <Link to={"/createitem"}>
                 <img
                   src={n.imageSrc}
                   className="w-20 lg:w-40 -mt-10 lg:-mt-20"
@@ -82,6 +86,8 @@ const HomeContainer = () => {
                 <p className="text-sm font-semibold text-headingColor">
                   <span className="text-xs text-red-600">{n.cta}</span>
                 </p>
+                </Link>
+                
               </div>
             ))}
         </div>
